@@ -32,3 +32,6 @@ data/processed/
 
 # Model cache
 .cache/
+
+# Inspection and preview artifacts (derived from raw data)
+docs/experiments/m3_chunk_preview/
