@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current milestone
-Milestone M3 — Chunking Subsystem Implementation (COMPLETE: Phases 1–5 delivered, tested, audited, and verified against all 10 raw corpus documents. Milestone M5 Embedding & Database Integration is next).
+Milestone M4 — Embeddings Subsystem Implementation (COMPLETE: Phases 1–3, 5, 6, 7 delivered and closed out. Verified via deterministic offline mock client for `all-MiniLM-L6-v2` with 384-dimensional vectors. Milestone M5 Database Storage is next, subject to formal shared contract commit).
 
 ## Completed
 - Local repository initialized and remote configured.
@@ -54,13 +54,34 @@ Milestone M3 — Chunking Subsystem Implementation (COMPLETE: Phases 1–5 deliv
   - 100% tenant isolation: Org A chunks strictly carry Org A UUID, Org B chunks strictly carry Org B UUID, 0 cross-tenant contamination.
   - 100% determinism: Re-running chunk generation produces identical chunk IDs, SHA-256 hashes, and token estimates.
   - Logging privacy: 0 unhandled warnings or errors logged during standard corpus ingestion.
+- Milestone M4 Phase 1 delivered:
+  - Foundational data structures, exception hierarchy, immutable configuration dataclass (`EmbeddingConfig` defaulted to `all-MiniLM-L6-v2`, 384 dimensions), and deeply immutable vector container (`EmbeddedChunk`) in `src/rag/embeddings/models.py`.
+- Milestone M4 Phase 2 delivered:
+  - Model-independent client abstraction (`BaseEmbeddingClient`) and offline deterministic mock client (`DeterministicMockEmbeddingClient`) in `src/rag/embeddings/client.py`.
+- Milestone M4 Phase 3 delivered:
+  - Pipeline orchestrator (`EmbeddingPipeline`) in `src/rag/embeddings/pipeline.py` enforcing tenant-segregated batching, 5-step indexed 1:1 positional reassembly, and runtime query vectorization (`embed_query`).
+- Milestone M4 Phase 5 delivered:
+  - Full-corpus Stage 0 smoke verification executed across all 10 raw documents (113 chunks) using the offline deterministic mock client, verifying 100% count match, 100% positional ordering, 100% tenant batch isolation, 384-dimensional finite unit vectors, and 100% metadata fidelity in 0.080s.
+  - Authoritative test harness in `tests/test_m4_embeddings.py` expanded to 34 unit and smoke tests (70 total tests across repository).
+  - Note: Mock vectors are non-semantic synthetic projections for structural verification; real model weights have not been downloaded.
+- Milestone M4 Phase 6 delivered:
+  - Staged Shared Team Contract Amendment RFC (`docs/contracts/RFC-01-embedding-dimension-amendment.md`) proposing Contract update to `embedding vector(384)` with `sentence-transformers/all-MiniLM-L6-v2`.
+- Milestone M4 Architectural Reconciliation:
+  - Reconciled planning documents and specifications with authoritative Shared Team Contract in `docs/CONTRACTS.md` (Section 5 officially locks `embedding VECTOR(384), -- all-MiniLM-L6-v2`).
+- Milestone M4 Phase 7 delivered:
+  - Finalized M4 documentation, documentation index (`docs/README.md`), and milestone status closeout.
+  - Formally closed Milestone M4.
 
 ## Not yet done
-- Milestone M5: Embedding model benchmarking and database integration.
+- Phase 4: Local `SentenceTransformerEmbeddingClient` implementation (deferred / gated behind explicit package installation approval).
+- Milestone M5: Database Storage & pgvector integration (`knowledge_base_articles.embedding vector(384)`).
 - Milestone M6: Retrieval and evaluation benchmark harness.
 
 ## Next milestone action
-Begin Milestone M5: Benchmark candidate embedding models and implement vector database storage/migrations under Shared Team Contract v3.0 (1536-d, PostgreSQL UUID PK).
+Advance to Milestone M5: Implement PostgreSQL / pgvector database storage and migration schema for `knowledge_base_articles` with column `embedding vector(384)` under authoritative Shared Team Contract (`docs/CONTRACTS.md` §5), or execute gated Phase 4 local model integration upon explicit user approval.
+
+## Active external dependency
+- Shared Contract Synchronization: Informational note in `docs/PROJECT_CONTEXT.md` §Shared contract can be aligned with `docs/CONTRACTS.md` §5 by contract owner.
 
 ## Update this file
 At the end of each meaningful work session, update completed items, current milestone, next action, blockers, and relevant commit hash (when available).
