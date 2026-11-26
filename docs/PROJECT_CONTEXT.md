@@ -28,7 +28,7 @@ Develop an independently testable RAG Knowledge Base component for a Multi-Tenan
 - Support_Agent: public and internal_staff.
 - Org_Admin: all tiers.
 - Mandatory SQL prefilter: organization plus authorized access tiers before similarity scoring.
-- The contract document specifies 1536-dimensional embeddings. Confirm this requirement before model selection or schema creation.
+- The contract document specifies 384-dimensional embeddings. Confirm this requirement before model selection or schema creation.
 
 ## Isolation and safety
 - Never mix organizations in retrieval.
