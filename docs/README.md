@@ -28,6 +28,12 @@
 - `contracts/RFC-01-embedding-dimension-amendment.md` — Shared Team Contract Amendment RFC (v3.0 -> v3.1: 384-d vector transition).
 - `../tests/test_m4_embeddings.py` — Authoritative 34-test unit, boundary, and full-corpus smoke test suite for embeddings pipeline.
 
+## Milestone M5: Real Embedding Inference
+- `plans/05-real-embedding-inference-plan.md` — Milestone M5 implementation plan (Real Embedding Inference).
+- `specs/SPEC-05-real-embedding-inference.md` — Milestone M5 technical specification (Real Embedding Inference Subsystem).
+- `design/05-real-embedding-inference.md` — Milestone M5 subsystem design and empirical benchmark telemetry.
+- `../tests/test_m5_real_inference.py` — Authoritative 9-test integration test suite for real embedding inference.
+
 ## Subdirectories
 - `experiments/` — experiment configurations and results as they become meaningful.
 - `design/` — detailed design documents for subsystems as they emerge.

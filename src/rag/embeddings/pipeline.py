@@ -12,7 +12,7 @@ from collections import defaultdict
 import math
 from typing import Dict, List, Optional, Tuple
 
-from src.rag.chunking.models import DocumentChunk, estimate_tokens
+from src.rag.chunking.models import DocumentChunk
 from src.rag.embeddings.client import BaseEmbeddingClient
 from src.rag.embeddings.models import (
     EmbeddedChunk,
@@ -101,11 +101,11 @@ class EmbeddingPipeline:
                 "Search query must be a non-empty, non-whitespace string"
             )
 
-        estimated_toks = estimate_tokens(stripped)
-        if estimated_toks > self._config.max_seq_length:
+        actual_tokens = self._client.count_tokens(stripped)
+        if actual_tokens > self._config.max_seq_length:
             raise EmbeddingValidationError(
                 f"Search query exceeds maximum sequence token limit of "
-                f"{self._config.max_seq_length} (estimated {estimated_toks} tokens)"
+                f"{self._config.max_seq_length} (actual tokenizer count: {actual_tokens} tokens, including special tokens)"
             )
 
         vector = self._client.embed_text(stripped)

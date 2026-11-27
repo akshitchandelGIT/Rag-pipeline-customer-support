@@ -1,7 +1,7 @@
 # Project Status
 
 ## Current milestone
-Milestone M4 — Embeddings Subsystem Implementation (COMPLETE: Phases 1–3, 5, 6, 7 delivered and closed out. Verified via deterministic offline mock client for `all-MiniLM-L6-v2` with 384-dimensional vectors. Milestone M5 Database Storage is next, subject to formal shared contract commit).
+Milestone M5 — Real Embedding Inference (COMPLETE: In-process CPU-only `sentence-transformers/all-MiniLM-L6-v2` implemented with 384-d vectors, exact WordPiece token counting, bulk truncation warnings, strict query length validation, and full-corpus integration benchmark verified. Database Storage & pgvector integration is next).
 
 ## Completed
 - Local repository initialized and remote configured.
@@ -71,14 +71,35 @@ Milestone M4 — Embeddings Subsystem Implementation (COMPLETE: Phases 1–3, 5,
 - Milestone M4 Phase 7 delivered:
   - Finalized M4 documentation, documentation index (`docs/README.md`), and milestone status closeout.
   - Formally closed Milestone M4.
+- Milestone M5 delivered:
+  - Milestone M5 Plan (`docs/plans/05-real-embedding-inference-plan.md`) reviewed and approved.
+  - Milestone M5 Specification (`docs/specs/SPEC-05-real-embedding-inference.md`) reviewed and approved.
+  - Bounded runtime dependencies staged in `requirements.txt` with lightweight CPU-only PyTorch (`torch==2.5.1+cpu`, `sentence-transformers==3.3.1`, `transformers==4.47.1`).
+  - Real embedding client (`SentenceTransformerEmbeddingClient`) implemented in `src/rag/embeddings/client.py`:
+    - In-process CPU execution under `torch.inference_mode()`.
+    - Lazy model loading lifecycle (`load_model()`, `unload_model()`, `is_loaded`).
+    - Offline model safety with `local_files_only=True` support.
+    - Model sequence ceiling (256 tokens) with exact WordPiece token counting (`count_tokens()`).
+    - Bulk ingestion truncation with structured, privacy-safe `token_truncation_warning` logs.
+    - Strict query length validation rejecting oversized queries in `client.embed_text()` and `pipeline.embed_query()`.
+  - Pipeline orchestrator (`EmbeddingPipeline`) updated in `src/rag/embeddings/pipeline.py` to use `count_tokens()` for query validation while keeping M3 chunking's `estimate_tokens()` heuristic untouched.
+  - Real-model integration test suite (`tests/test_m5_real_inference.py`) implemented with 9 comprehensive tests (`T5-01` through `T5-09`):
+    - Model lifecycle lazy loading, vector dimensionality (strictly 384-d), and mathematical $L_2$ unit normalization ($1.0 \pm 10^{-4}$).
+    - Semantic relative-ranking verification: $\text{sim}_{\text{rel}} > \text{sim}_{\text{unrel}}$ ($0.5575 > 0.0392$, margin $= +0.5183$).
+    - Query-document vector consistency and batching consistency.
+    - Bulk truncation structured warnings with zero content/token leakage.
+    - Comprehensive validation and missing-weights error handling.
+    - Full-corpus benchmark across all 113 raw chunks: 2.90s total, 25.70 ms/chunk, 38.92 chunks/s, 741 MB RSS, 100% pass across all 7 hard correctness gates.
+  - Zero-download offline test isolation verified with `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1`.
+  - Complete repository test suite: 79/79 passing tests (13 M1 + 23 M3 + 34 M4 + 9 M5).
+  - Documentation delivered: `docs/design/05-real-embedding-inference.md`, `docs/STATUS.md`, `docs/CHANGELOG.md`, `docs/README.md`.
 
 ## Not yet done
-- Phase 4: Local `SentenceTransformerEmbeddingClient` implementation (deferred / gated behind explicit package installation approval).
-- Milestone M5: Database Storage & pgvector integration (`knowledge_base_articles.embedding vector(384)`).
-- Milestone M6: Retrieval and evaluation benchmark harness.
+- Milestone M6: Database Storage & pgvector integration (`knowledge_base_articles.embedding vector(384)`).
+- Milestone M7: Retrieval and evaluation benchmark harness.
 
 ## Next milestone action
-Advance to Milestone M5: Implement PostgreSQL / pgvector database storage and migration schema for `knowledge_base_articles` with column `embedding vector(384)` under authoritative Shared Team Contract (`docs/CONTRACTS.md` §5), or execute gated Phase 4 local model integration upon explicit user approval.
+Advance to Database Storage & pgvector integration (`knowledge_base_articles.embedding vector(384)`) under authoritative Shared Team Contract (`docs/CONTRACTS.md` §5).
 
 ## Active external dependency
 - Shared Contract Synchronization: Informational note in `docs/PROJECT_CONTEXT.md` §Shared contract can be aligned with `docs/CONTRACTS.md` §5 by contract owner.

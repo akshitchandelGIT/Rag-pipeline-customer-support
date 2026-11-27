@@ -6,8 +6,10 @@ Phase 3 deliverable: Pipeline Orchestrator (Tenant Batching & Reassembly).
 """
 
 from src.rag.embeddings.client import (
+    HAS_SENTENCE_TRANSFORMERS,
     BaseEmbeddingClient,
     DeterministicMockEmbeddingClient,
+    SentenceTransformerEmbeddingClient,
 )
 from src.rag.embeddings.models import (
     DEFAULT_BATCH_SIZE,
@@ -43,4 +45,6 @@ __all__ = [
     "EmbeddingPipeline",
     "EmbeddingRateLimitError",
     "EmbeddingValidationError",
+    "HAS_SENTENCE_TRANSFORMERS",
+    "SentenceTransformerEmbeddingClient",
 ]
