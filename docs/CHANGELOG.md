@@ -2,6 +2,12 @@
 
 Meaningful, reviewable changes only. Add date, milestone, summary, tests, and commit reference (if available).
 
+## Milestone M5: Real Embedding Inference — Full Implementation & Verification
+- Date: 2026-11-27
+- Milestone: M5 — Real Embedding Inference Implementation
+- Summary: Implemented local, in-process real embedding inference using `sentence-transformers/all-MiniLM-L6-v2` producing 384-dimensional unit-normalized float vectors. Key deliverables: (1) bounded dependencies defined in `requirements.txt` with lightweight CPU-only PyTorch; (2) `SentenceTransformerEmbeddingClient` implemented in `src/rag/embeddings/client.py` with lazy loading, CPU execution under `torch.inference_mode()`, `unload_model()` memory reclamation, and offline execution support; (3) exact WordPiece tokenizer counting (`count_tokens()`) accounting for `[CLS]` and `[SEP]` special tokens, leaving M3 chunking's `estimate_tokens()` heuristic untouched; (4) permitted bulk ingestion truncation emitting structured content-free `token_truncation_warning` logs; (5) strict search query sequence ceiling enforcement (>256 tokens) raising `EmbeddingValidationError` in `client.embed_text()` and `pipeline.embed_query()`; (6) integration test harness in `tests/test_m5_real_inference.py` implementing tests T5-01 through T5-09; (7) semantic relative-ranking verified ($\text{sim}_{\text{rel}}=0.5575 > \text{sim}_{\text{unrel}}=0.0392$, margin $= +0.5183$); (8) empirical full-corpus benchmark across all 113 chunks from `data/raw/` executing in 2.90s (25.70 ms/chunk, 38.92 chunks/s, 741 MB RSS) passing 100% of hard correctness invariant gates; (9) offline test isolation verified under `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1` with zero network access; (10) updated subsystem design and benchmark report in `docs/design/05-real-embedding-inference.md`.
+- Tests: 9/9 M5 integration tests passing; 79/79 total repository tests passing in 7.75s (`python3 -m unittest discover tests -v`).
+
 ## Milestone M4: Embeddings Subsystem — Phase 7: Documentation Finalization & Closeout
 - Date: 2026-11-26
 - Milestone: M4 — Embeddings Subsystem Closeout (Phase 7)
